@@ -58,7 +58,7 @@ const Login=async(req,res)=>{
 
 const Logout=async(req,res)=>{
     try {
-        res.clearCookie('token'); // clear the cookie 
+        res.clearCookie('token'); // clear the cookie         netstat -ano | findstr :3001
         res.status(200).json({message:"Logout successful"});
     } catch (error) {
         console.error("Logout failed:", error);
