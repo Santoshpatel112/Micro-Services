@@ -1,7 +1,7 @@
 
 
 
-# 🚗 Micro-Services: Uber-Style Platform
+# 🚗 Micro-Services: Uber-Model Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-18.x-green?logo=node.js"/>
