@@ -52,21 +52,31 @@ flowchart TD
     subgraph Ride
         R[Ride Service]
     end
-    subgraph MQ[<b>RabbitMQ</b>]
-        Q(( ))
-    end
 
-    G -- "REST API (Sync)" --> U
-    G -- "REST API (Sync)" --> C
-    G -- "REST API (Sync)" --> R
+    G -- HTTP/S --> U
+    G -- HTTP/S --> C
+    G -- HTTP/S --> R
 
-    G -- "PublishToQueue (Async)" --> Q
-    U -- "SubscribeToQueue (Async)" --> Q
-    C -- "SubscribeToQueue (Async)" --> Q
-    R -- "SubscribeToQueue (Async)" --> Q
-    U -- "PublishToQueue (Async)" --> Q
-    C -- "PublishToQueue (Async)" --> Q
-    R -- "PublishToQueue (Async)" --> Q
+    U -- Asynchronous (RabbitMQ) --> R: Request Ride
+    C -- Asynchronous (RabbitMQ) --> R: Accept Ride
+    R -- Asynchronous (RabbitMQ) --> U: Ride Accepted Notification (Long Polling)
+    R -- Asynchronous (RabbitMQ) --> C: New Ride Request Notification (Long Polling)
+
+    U -- Synchronous (HTTP/S) --> G: User API Calls
+    C -- Synchronous (HTTP/S) --> G: Captain API Calls
+    R -- Synchronous (HTTP/S) --> G: Ride API Calls
+
+    U -- MongoDB --> DB_U[User Database]
+    C -- MongoDB --> DB_C[Captain Database]
+    R -- MongoDB --> DB_R[Ride Database]
+
+    style G fill:#f9f,stroke:#333,stroke-width:2px
+    style U fill:#ccf,stroke:#333,stroke-width:2px
+    style C fill:#cfc,stroke:#333,stroke-width:2px
+    style R fill:#ffc,stroke:#333,stroke-width:2px
+    style DB_U fill:#fcf,stroke:#333,stroke-width:2px
+    style DB_C fill:#fcf,stroke:#333,stroke-width:2px
+    style DB_R fill:#fcf,stroke:#333,stroke-width:2px
 ```
 
 <pre align="center">

@@ -102,16 +102,66 @@ const ToggelAvilbility = async (req, res) => {
 }
 
 
+let pendingRides = [];
+
+// Subscribe to new ride notifications
 SubscribeToQueue("new-ride", (data) => {
-    console.log("Received ride availability message:", json.Parse(data));
-    // Handle the message as needed
+    const rideData = JSON.parse(data);
+    pendingRides.push(rideData);
 });
+
+const waitForNewRide = async (req, res) => {
+    const timeout = 30000; // 30 seconds timeout
+    const startTime = Date.now();
+
+    try {
+        // Check if captain is available
+        const captainId = req.captain._id;
+        const captain = await captainModel.findById(captainId);
+        
+        if (!captain || !captain.isAvailable) {
+            return res.status(400).json({ message: "Captain is not available for rides" });
+        }
+
+        // Long polling loop
+        const pollForRide = async () => {
+            // Check if there are any pending rides
+            if (pendingRides.length > 0) {
+                const ride = pendingRides.shift(); // Get and remove the first ride
+                return res.status(200).json({ 
+                    message: "New ride found",
+                    ride: ride
+                });
+            }
+
+            // Check if timeout has been reached
+            if (Date.now() - startTime >= timeout) {
+                return res.status(408).json({ 
+                    message: "No rides available. Timeout reached."
+                });
+            }
+
+            // Wait for 1 second before checking again
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return pollForRide();
+        };
+
+        await pollForRide();
+
+    } catch (error) {
+        console.error("Error in waitForNewRide:", error);
+        return res.status(500).json({
+            message: "Internal server error while waiting for ride"
+        });
+    }
+};
 
 module.exports = {
     Register,
     Login,
     Logout,
     Profile,
-    ToggelAvilbility
+    ToggelAvilbility,
+    waitForNewRide
 };
 // This code defines a Register function that handles user registration. It checks if the user already exists

@@ -21,5 +21,34 @@ const createRide = async (req, res) => {
   }
 };
 
+const acceptRide=async(req,res)=>{
+  const rideId=req.params.rideId;
+  const captainId=req.captain._id;
+  try {
+    const ride=await Ride.findById(rideId);
+    if(!ride){
+      return res.status(404).json({message:"Ride not found"});
+    }
+    if(ride.status !== "pending"){
+      return res.status(400).json({message:"Ride is not pending"});
+    }
+    ride.captain=captainId;
+    ride.status="accepted";
+    PublishToQueue("ride-accepted", json.stringify(ride)); // Publish the accepted ride to RabbitMQ queue
+    await ride.save();
+    res.send('Ride accepted successfully' + ride)
+    return res.status(200).json({message:"Ride accepted successfully", ride});
+
+  }catch(error){
+    console.error("Error accepting ride:", error);
+    return res
+    .status(500)
+    .json({ message: "Internal server error | Ride acceptance failed" });
+  }
+}
+
 PublishToQueue("new-ride", json.stringify(newRide)); // Publish the new ride to RabbitMQ queue
-exports.createRide = createRide;
+module.exports={
+  createRide,
+  acceptRide
+}

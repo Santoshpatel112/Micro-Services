@@ -1,9 +1,11 @@
 const express=require('express');
 const router=express.Router();
 const authmiddleware = require("../middleware/authmiddelware");
-const { createRide } = require("../Controllers/ride.controller");
+const { createRide ,acceptRide} = require("../Controllers/ride.controller");
 
 router.post('/create-ride', authmiddleware.userAuth, createRide);
+router.put('/accept-ride/:rideId', authmiddleware.captainAuth, acceptRide);
+
 
 
 module.exports = router;

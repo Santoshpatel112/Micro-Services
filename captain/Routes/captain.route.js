@@ -8,5 +8,6 @@ router.post('/login',Login);
 router.get('/logout',Logout);
 router.get('/profile',Authmiddleware.captainAuth,Profile);
 router.post('/toggle-availability', Authmiddleware.captainAuth, ToggelAvilbility);
+router.get('/new-ride',Authmiddleware.captainAuth,captainController.waitForNewRide);
 
 module.exports = router;

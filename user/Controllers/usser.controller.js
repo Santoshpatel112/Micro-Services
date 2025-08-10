@@ -76,10 +76,30 @@ const Profile=async(req,res)=>{
         return res.status(500).json({message:"Internal server error | Profile retrieval failed"});
     }
 }
+
+const acceptRide=async(req,res)=>{
+    const userId=req.user._id;
+    try {
+        const newRide=new Ride({
+            user: userId,
+            name: req.user.name, // Assuming req.user contains user information
+            pickup,
+            destination
+        })
+        await newRide.save();
+        return res.status(201).json({message:"Ride created successfully", ride: newRide});
+    }catch (error) {
+        console.error("Error creating ride:", error);
+        return res
+         .status(500)
+         .json({ message: "Internal server error | Ride creation failed" });
+    }
+}
 module.exports = {
     Register,
     Login,
     Logout,
-    Profile
+    Profile,
+    acceptRide
 };
 // This code defines a Register function that handles user registration. It checks if the user already exists

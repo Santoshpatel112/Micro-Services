@@ -34,3 +34,31 @@ module.exports.userAuth = async (req, res, next) => {
     return res.status(403).json({ message: "Forbidden | Invalid token" });
   }
 };
+
+module.exports.captainAuth=async (req,res,next)=>{
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+       .status(401)
+       .json({ message: "Unauthorized | No token provided" });
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Fetch user profile from user service with token
+      const captain1=await captainModel.findById(decoded.captainId);
+      if (!captain1) {
+        return res.status(404).json({ message: "captain not found" });
+      }
+      const response = await axios.get(`${Base_URL}/profile`, { // user profile route hit
+        headers: {
+          Cookie: `token=${token}`,
+          Authorization: `Bearer ${token}`,
+        }
+      }); // Missing closing parenthesis and semicolon was here
+      req.captain = captain1;
+      next();
+    } catch (error) {
+      console.error("Authentication error:", error);
+      return res.status(403).json({ message: "Forbidden | Invalid token" });
+    }
+};

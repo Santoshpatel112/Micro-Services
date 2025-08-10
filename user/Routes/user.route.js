@@ -7,5 +7,5 @@ router.post('/register',Register);
 router.post('/login',Login);
 router.get('/logout',Logout);
 router.get('/profile',Authmiddleware.userAuth,Profile);
-
+router.get('/accepted-ride',Authmiddleware.userAuth,userController.acceptRide);
 module.exports = router;
