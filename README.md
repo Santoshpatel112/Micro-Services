@@ -59,8 +59,8 @@ flowchart TD
 
     U -- Asynchronous (RabbitMQ) --> R: Request Ride
     C -- Asynchronous (RabbitMQ) --> R: Accept Ride
-    R -- Asynchronous (RabbitMQ) --> U: Ride Accepted Notification (Long Polling)
-    R -- Asynchronous (RabbitMQ) --> C: New Ride Request Notification (Long Polling)
+    R -- Asynchronous (RabbitMQ) --> U -- Ride Accepted Notification (Long Polling) -->
+    R -- Asynchronous (RabbitMQ) --> C -- New Ride Request Notification (Long Polling) -->
 
     U -- Synchronous (HTTP/S) --> G: User API Calls
     C -- Synchronous (HTTP/S) --> G: Captain API Calls
