@@ -4,7 +4,6 @@ const createRide = async (req, res) => {
     const {pickup , destination} = req.body;
     const userId=req.user._id;
   try {
-
     const newRide=new Ride({
         user: userId,
         name: req.user.name, // Assuming req.user contains user information
@@ -22,5 +21,5 @@ const createRide = async (req, res) => {
   }
 };
 
-PublishToQueue("new-ride", json.stringify(newRide));
+PublishToQueue("new-ride", json.stringify(newRide)); // Publish the new ride to RabbitMQ queue
 exports.createRide = createRide;

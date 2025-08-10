@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const {SubscribeToQueue}=require('../services/rabbit');
 const Register=async (req ,res)=>{
     const {name, email, password} = req.body;
     try {
@@ -100,6 +100,13 @@ const ToggelAvilbility = async (req, res) => {
     await captain.save();
     res.status(200).json({ message: `Captain availability toggled to ${captain.isAvailable}` });
 }
+
+
+SubscribeToQueue("new-ride", (data) => {
+    console.log("Received ride availability message:", json.Parse(data));
+    // Handle the message as needed
+});
+
 module.exports = {
     Register,
     Login,
