@@ -24,7 +24,70 @@
 ## 🏗️ Modern Microservices Architecture
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/6388707/235352964-uber-microservices-arch.png" alt="Uber Microservices Architecture" width="600"/>
+<img src="https://user-images.githubusercontent.com/6388707/235352964-uber-microservices-arch.png" alt="Uber Microservices Architecture" width="600"/>
+
+<br/>
+
+
+### 🟢 Synchronous & 🔵 Asynchronous Communication
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/microsoft/PowerPlatformConnectors/main/docs/images/rabbitmq-logo.png" alt="RabbitMQ" width="60"/>
+</p>
+
+<details>
+<summary><b>Click to expand animated communication diagram</b></summary>
+
+```mermaid
+flowchart TD
+    subgraph Gateway
+        G[Gateway Service]
+    end
+    subgraph User
+        U[User Service]
+    end
+    subgraph Captain
+        C[Captain Service]
+    end
+    subgraph Ride
+        R[Ride Service]
+    end
+    subgraph MQ[<b>RabbitMQ</b>]
+        Q(( ))
+    end
+
+    G -- "REST API (Sync)" --> U
+    G -- "REST API (Sync)" --> C
+    G -- "REST API (Sync)" --> R
+
+    G -- "PublishToQueue (Async)" --> Q
+    U -- "SubscribeToQueue (Async)" --> Q
+    C -- "SubscribeToQueue (Async)" --> Q
+    R -- "SubscribeToQueue (Async)" --> Q
+    U -- "PublishToQueue (Async)" --> Q
+    C -- "PublishToQueue (Async)" --> Q
+    R -- "PublishToQueue (Async)" --> Q
+```
+
+<pre align="center">
+REST (Synchronous):
+  Gateway <==> User, Captain, Ride (direct API calls)
+
+RabbitMQ (Asynchronous):
+  Any Service <==> RabbitMQ <==> Any Service
+  (via PublishToQueue & SubscribeToQueue)
+</pre>
+
+<p align="center">
+  <img src="https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif" width="120" alt="moving car animation"/>
+  <img src="https://cdn.dribbble.com/users/1787323/screenshots/5606316/rabbitmq.gif" width="120" alt="rabbitmq animation"/>
+</p>
+
+</details>
+
+<p align="center">
+   <b>All services use RabbitMQ for asynchronous messaging (PublishToQueue/SubscribeToQueue), enabling event-driven communication alongside REST APIs for synchronous flows.<br>
+   This hybrid approach ensures reliability, scalability, and real-time updates across the platform.</b>
 </p>
 
 > **Each service (User, Captain, Ride, Gateway) is a standalone Node.js app, communicating via REST APIs and managed by a central Gateway.**

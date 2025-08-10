@@ -4,8 +4,14 @@ const cookeiparser = require('cookie-parser');
 const app=express();
 dotenv.config();
 const userRoutes = require('./Routes/user.route');
-const ConnectDb=require('./db/db')
+const RabbitMQ = require('./services/rabbit');
+const ConnectDb=require('./db/db');
+const rabbit = require('./services/rabbit');
 ConnectDb(); // Connect to MongoDB
+RabbitMQ.connect();
+// Initialize RabbitMQ connection
+// const ConnectDb=require('./db/db')
+// Connect to MongoDB
 app.use(express.json());
 app.use(cookeiparser());
 app.use(express.urlencoded({ extended: true })); 
